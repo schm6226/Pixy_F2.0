@@ -1,30 +1,31 @@
-/*this code uses a flywheel to point the 
+/* This code uses a flywheel to point the 
  * Pixy camera.
- * created by Andrew Schmit for UMN 
- * Ballooning team*/
- 
+ * Created by Andrew Schmit for UMN 
+ * Ballooning team 
+ */
+
 #include <signal.h>
-#include <wiringPi.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <lgpio.h>
 #include "libpixyusb2.h"
 #include <PIDLoop.h>
 
-#define STP 23  // GPIO pin for step (BCM 23)
-#define DIR 24  // GPIO pin for direction (BCM 24)
+// GPIO pins using BCM numbering
+#define STP 23  // Step pin
+#define DIR 24  // Direction pin
 
 Pixy2 pixy;
 PIDLoop panLoop(0.5, 0.01, 0.2, true);  // Tune these values!
 static bool run_flag = true;
 
-void setup() {
-  pinMode(STP, OUTPUT);
-  pinMode(DIR, OUTPUT);
-}
+int h;  // lgpio handle
 
 void handle_SIGINT(int unused) {
   run_flag = false;
 }
 
-// Convert Pixy x-offset to flywheel speed
 int16_t acquireBlock() {
   if (pixy.ccc.numBlocks && pixy.ccc.blocks[0].m_age > 30)
     return pixy.ccc.blocks[0].m_index;
@@ -39,20 +40,19 @@ Block* trackBlock(uint8_t index) {
   return NULL;
 }
 
-// Spin flywheel proportionally to control signal
 void spinFlywheel(int speed) {
-  speed = constrain(speed, -300, 300);  // limit speed (adjust as needed)
+  speed = std::clamp(speed, -300, 300);  // C++17 std::clamp
 
   if (speed == 0) return;
 
-  digitalWrite(DIR, speed > 0 ? HIGH : LOW);
+  lgGpioWrite(h, DIR, speed > 0 ? 1 : 0);
   speed = abs(speed);
 
   for (int i = 0; i < speed; i++) {
-    digitalWrite(STP, HIGH);
-    delayMicroseconds(500);
-    digitalWrite(STP, LOW);
-    delayMicroseconds(500);
+    lgGpioWrite(h, STP, 1);
+    usleep(500);
+    lgGpioWrite(h, STP, 0);
+    usleep(500);
   }
 }
 
@@ -62,10 +62,23 @@ int main() {
   int32_t panOffset;
   Block* block = NULL;
 
-  wiringPiSetupGpio();  // use BCM pin numbering
-  setup();
   signal(SIGINT, handle_SIGINT);
-  
+
+  // Open GPIO chip
+  h = lgGpiochipOpen(0);  // Use GPIO chip 0 (/dev/gpiochip0)
+  if (h < 0) {
+    perror("lgGpiochipOpen failed");
+    return 1;
+  }
+
+  // Set up GPIO pins as output
+  if (lgGpioClaimOutput(h, 0, STP, 0) < 0 ||
+      lgGpioClaimOutput(h, 0, DIR, 0) < 0) {
+    perror("Failed to claim GPIO pins");
+    return 1;
+  }
+
+  // Initialize Pixy2
   pixy.init();
   pixy.changeProg("color_connected_components");
 
@@ -96,11 +109,11 @@ int main() {
       // Spin flywheel
       spinFlywheel(speed);
     } else {
-      index = -1;
-      // If no target, stop spinning
+      spinFlywheel(5); //spin the stepper motor untill sun is found
     }
   }
 
   printf("Exiting...\n");
+  lgGpiochipClose(h);
   return 0;
 }
