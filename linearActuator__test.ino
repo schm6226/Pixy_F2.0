@@ -6,6 +6,7 @@ const int BIN1_PIN    = 8;    // TB6621 input 1
 const int BIN2_PIN    = 9;    // TB6621 input 2
 const int PWMB_PIN    = 10;    // TB6621 PWM enable pin (connected to ENABLE)
 const int FEEDBACK_PIN = 28;  // Actuonix feedback pot output
+const int STBY=7;
 
 // Control Parameters
 const float KP = 0.5;         // Proportional gain, adjust as needed
@@ -18,11 +19,15 @@ const int FEEDBACK_MAX = 1023; // Maximum analog value (fully extended)
 float targetPosition = 0.5;    // Default to mid-stroke
 
 void setup() {
+
   // Initialize pins
   pinMode(BIN1_PIN, OUTPUT);
   pinMode(BIN2_PIN, OUTPUT);
   pinMode(PWMB_PIN, OUTPUT);
   pinMode(FEEDBACK_PIN, INPUT);
+  pinMode (STBY, OUTPUT);
+
+digitalWrite(STBY,HIGH);
 
   // Initialize Serial for debugging
   Serial.begin(9600);
