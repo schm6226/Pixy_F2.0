@@ -59,7 +59,8 @@ void systemSetup() {
   }
 
 
-
+  // Original Piccolo Code
+  
   /*inStatus = inTher.begin(10);
   outStatus = outTher.begin(10);
 
