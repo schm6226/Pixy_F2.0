@@ -59,8 +59,7 @@ void systemSetup() {
   }
 
 
-  // Original Piccolo Code
-  
+
   /*inStatus = inTher.begin(10);
   outStatus = outTher.begin(10);
 
@@ -105,10 +104,10 @@ void systemSetup() {
 
   pinMode(inPin, INPUT);
 
-  // Pixysetup();
-  // printOLED("Pixy Setup Finished", true);
+  Pixysetup();
+  printOLED("Pixy Setup Finished", true);
 
-  // Actuatorsetup();
+  Actuatorsetup();
   Controlwheelsetup();
   Serial.println("Setup Finished");
   printOLED("Servo Setup Finished", true);
