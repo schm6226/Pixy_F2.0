@@ -30,6 +30,7 @@ void Actuatorsetup() {
     printOLED(String(pos));
   }
 
+  // Posibly use this for testing, could be causing error
   // moveActuator(true);
   // for (int i = 0; i < 50; i++){
   //   delay(100);
@@ -54,14 +55,16 @@ void stopActuator() {
 }
 
 
-
+// potential source of error
 void resetActuator(){
   pos = analogRead(feedbackPin);
   if(pos > 280){
     actuatorReset = true;
-  }else if(pos < 280){
+  }
+  else if(pos < 280){
     actuatorReset = false;
   }
+  // this could cause error, if the movement isn't finished there is no way to know, could be incorrect assumption that actuator is reset.
   if(actuatorReset == false){
     moveActuator(true);
     delay(5000);
@@ -98,9 +101,12 @@ void updateLinearActuator(float targetHeadingZ) {
   moveActuator(////// )
 */
 // Reads and prints position every 100 ms for `duration` milliseconds
+
+// NOTE: I updated this code so that the pos is updating in the loop.
 void printPositionDuringMove(int duration) {
   int start = millis();
-  while (millis() - start < duration) { 
+  while (millis() - start < duration) {
+    pos = analogRead(feedbackPin);
     Serial.print("Position: ");
     Serial.println(pos);
     delay(100);
