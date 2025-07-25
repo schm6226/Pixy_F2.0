@@ -55,7 +55,7 @@ void stopActuator() {
   analogWrite(PWMB, 0);
 }
 
-
+// I need to ask Andrew about position scale and why 280 is the assumed to be reset.
 // potential source of error
 void resetActuator(){
   pos = analogRead(feedbackPin);
