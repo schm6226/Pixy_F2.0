@@ -6,6 +6,7 @@ Code by: Andrew Schmit
 Last modified: 6/30/2025
 _____________________________________________________________
 */
+bool actuatorReset = false;
 
 void Actuatorsetup() {
   pinMode(BIN1, OUTPUT);
