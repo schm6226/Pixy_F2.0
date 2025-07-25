@@ -17,7 +17,7 @@ void Controlwheelsetup() {
   delay(1000);  // Allow servo to initialize
   
      printOLED("Starting sweep test...");
-
+    
     // Full reverse (~1ms pulse → ~5% duty cycle)
     analogWrite(SERVO_PIN, 26);
     Serial.println("Full reverse");
