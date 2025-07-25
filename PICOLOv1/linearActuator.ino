@@ -30,7 +30,7 @@ void Actuatorsetup() {
     printOLED(String(pos));
   }
 
-  // Posibly use this for testing, could be causing error
+  // Posibly use this for testing, could be checking cause of error 
   // moveActuator(true);
   // for (int i = 0; i < 50; i++){
   //   delay(100);
@@ -106,9 +106,9 @@ void updateLinearActuator(float targetHeadingZ) {
 void printPositionDuringMove(int duration) {
   int start = millis();
   while (millis() - start < duration) {
-    pos = analogRead(feedbackPin);
+    int currentPos = analogRead(feedbackPin);
     Serial.print("Position: ");
-    Serial.println(pos);
+    Serial.println(currentPos);
     delay(100);
   }
 }
