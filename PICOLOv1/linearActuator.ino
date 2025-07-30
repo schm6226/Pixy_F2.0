@@ -56,7 +56,6 @@ void stopActuator() {
 }
 
 // I need to ask Andrew about position scale and why 280 is the assumed to be reset.
-// potential source of error
 void resetActuator() {
   pos = analogRead(feedbackPin);
   if(pos > 280){
@@ -67,12 +66,12 @@ void resetActuator() {
   }
   if (!actuatorReset) {
     moveActuator(true);
-    for (int i = 0; i < 10; i++) {  // 10 checks every 500 ms = 5 seconds total
+    for (int i = 0; i < 10; i++) { 
       delay(500);
       pos = analogRead(feedbackPin);
       if (pos > 280) {
         actuatorReset = true;
-        break;  // stop checking early if reset reached
+        break;  // stop checking early if reset reached!
       }
     }
     stopActuator();
