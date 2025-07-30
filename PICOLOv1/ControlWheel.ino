@@ -17,25 +17,29 @@ void Controlwheelsetup() {
   delay(1000);  // Allow servo to initialize
   
      printOLED("Starting sweep test...");
-    
+
     // Full reverse (~1ms pulse → ~5% duty cycle)
     analogWrite(SERVO_PIN, 26);
-    Serial.println("Full reverse");
+    digitalWrite(LED_R, HIGH);
+    printOLED("Full reverse"); // change back to serial print
     delay(2000);
 
     // Stop (~1.5ms pulse → ~7.5% duty cycle)
     analogWrite(SERVO_PIN, 38);
-    Serial.println("Stop");
+    digitalWrite(LED_R, LOW);
+    printOLED("Stop");
     delay(2000);
 
     // Full forward (~2ms pulse → ~10% duty cycle)
     analogWrite(SERVO_PIN, 51);
-    Serial.println("Full forward");
+    digitalWrite(LED_L, HIGH);
+    printOLED("Full forward");
     delay(2000);
 
     // Stop again
     analogWrite(SERVO_PIN, 38);
-    Serial.println("Stop");
+    digitalWrite(LED_L, LOW);
+    printOLED("Stop");
     delay(2000);
 
     printOLED("Servo test complete.");
@@ -50,7 +54,7 @@ void setServoSpeed(int speed) {
 
     analogWrite(14, dutyCycle);  // Set PWM output
 }
-/*
+
 float calculateHeadingError(float current, float target) {
   // Normalize the error to -180 to 180 range
   float error = target - current;
@@ -58,7 +62,7 @@ float calculateHeadingError(float current, float target) {
   while (error < -180) error += 360;
   return error;
 }
-*/
+
 float calculatePID(float error) {
   unsigned long currentTime = millis();
   float deltaTime = (currentTime - previousTime) / 1000.0;  // Convert to seconds
