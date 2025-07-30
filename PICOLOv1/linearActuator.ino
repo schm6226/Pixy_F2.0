@@ -57,21 +57,21 @@ void stopActuator() {
 
 // I need to ask Andrew about position scale and why 280 is the assumed to be reset.
 // potential source of error
-void resetActuator(){
+void resetActuator() {
   pos = analogRead(feedbackPin);
-  if(pos > 280){
-    actuatorReset = true;
-  }
-  else
-    actuatorReset = false;
-  }
-  // this could cause error, if the movement isn't finished there is no way to know, could be incorrect assumption that actuator is reset.
-  if(!actuatorReset){
-   moveActuator(true);
-    delay(5000);   // move for 5 seconds
+  actuatorReset = (pos > 280);
+
+  if (!actuatorReset) {
+    moveActuator(true);
+    for (int i = 0; i < 10; i++) {  // 10 checks every 500 ms = 5 seconds total
+      delay(500);
+      pos = analogRead(feedbackPin);
+      if (pos > 280) {
+        actuatorReset = true;
+        break;  // stop checking early if reset reached
+      }
+    }
     stopActuator();
-  }
-}
   }
 }
 /*
