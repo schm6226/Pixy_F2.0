@@ -66,10 +66,12 @@ void resetActuator(){
     actuatorReset = false;
   }
   // this could cause error, if the movement isn't finished there is no way to know, could be incorrect assumption that actuator is reset.
-  if(actuatorReset == false){
-    moveActuator(true);
-    delay(5000);
+  if(!actuatorReset){
+   moveActuator(true);
+    delay(5000);   // move for 5 seconds
     stopActuator();
+  }
+}
   }
 }
 /*
