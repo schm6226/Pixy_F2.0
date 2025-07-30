@@ -62,7 +62,7 @@ void resetActuator(){
   if(pos > 280){
     actuatorReset = true;
   }
-  else if(pos < 280){
+  else
     actuatorReset = false;
   }
   // this could cause error, if the movement isn't finished there is no way to know, could be incorrect assumption that actuator is reset.
