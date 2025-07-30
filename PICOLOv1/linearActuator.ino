@@ -59,8 +59,12 @@ void stopActuator() {
 // potential source of error
 void resetActuator() {
   pos = analogRead(feedbackPin);
-  actuatorReset = (pos > 280);
-
+  if(pos > 280){
+    actuatorReset = true;
+  }
+  else{
+    actuatorReset = false;
+  }
   if (!actuatorReset) {
     moveActuator(true);
     for (int i = 0; i < 10; i++) {  // 10 checks every 500 ms = 5 seconds total
