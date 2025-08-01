@@ -63,30 +63,18 @@ void stopActuator() {
 }
 
 void resetActuator() {
-  // Continuously move actuator until it's within the desired range
-  while (true) {
-    pos = analogRead(feedbackPin);
-    truePos = posMap(pos, minPos, maxPos);
+  pos = analogRead(feedbackPin);
+  truePos = posMap(pos, minPos, maxPos);
 
-    if (truePos > targetPos + tolerance) {
-      moveActuator(true);   // Move toward retracted
-    }
-    else if (truePos < targetPos - tolerance) {
-      moveActuator(false);  // Move toward extended
-    }
-    else {
-      stopActuator(); 
-      printOLED("Actuator reset properly"); // aded to make sure the actuator is resettin adn we will know that
-      delay(100);
-      return;  // Exit loop when within range
-    }
-    delay(50);  // Give time for motor to move
+  if (truePos > targetPos + tolerance) {
+    moveActuator(true);  // Move toward retracted
   }
-  // idk if this should be in an if statement for when this should happen
-  //if (millis() - currentTime < 200) { needs to be fixed, but the idea is if the while loop above runs for too long the actuator will stop instaed of continuoulsy running.
-    stopActuator();
-    printOLED("Reset completed"); // adds a stop if the loop fails
-  //}
+  else if (truePos < targetPos - tolerance) {
+    moveActuator(false); // Move toward extended
+  }
+  else {
+    stopActuator();      // Stop when within tolerance
+  }
 }
 
 void updateLinearActuator() {  
