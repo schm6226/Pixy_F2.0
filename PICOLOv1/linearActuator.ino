@@ -79,9 +79,7 @@ void resetActuator() {
 
 void updateLinearActuator() {  
   proportionalZ = KPZ * errorZ; // find proportional term
-  
   if(pixy.ccc.numBlocks > 0){
-    while(true){
       if (proportionalZ < -5){
         moveActuator(true);
       }
@@ -94,7 +92,7 @@ void updateLinearActuator() {
       }
       delay(50);
     }
-  }else{
+  else{
     resetActuator();
   }
 
