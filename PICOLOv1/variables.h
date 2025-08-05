@@ -193,7 +193,7 @@ float errorZ = 0;
 const int tiltPin = 7;
 int tiltVal = 0;
 String tiltMode = "Idle";
-int maxVal = 0; // smallest possible Value
+int maxVal = 0; // smallest possible Value make sure these are correct
 int minVal = 1023; //largest possible Value
 // //pitch
 // float ax = accelerometer[0]; // X-axis acceleration
