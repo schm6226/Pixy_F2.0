@@ -47,7 +47,6 @@
 //   return (float)(pos - min) * (5.0 / (max - min)); // only change that might be meaningful
 // }
 // // Moves actuator in a direction at duty cycle
-
 // // Stops the actuator
 // void stopActuator() {
 //   analogWrite(PWMB, 0);
@@ -95,7 +94,6 @@
 //   else{
 //     stopActuator();
 //   }
-
 // }
 // // Reads and prints position every 100 ms for `duration` milliseconds
 // void moveActuator(bool extend) {
