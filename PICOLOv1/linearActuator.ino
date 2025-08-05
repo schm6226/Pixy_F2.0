@@ -16,7 +16,7 @@ void Actuatorsetup() {
 
   printOLED("Starting Actuator test.");
 /*
-  void setup() {
+  void setup() { // creates a value to use for position... does what analogRead does apparently
   // Configure ADMUX register
   // Select AVCC as reference (REFS bits)
   // Select A0 as input channel (MUX bits)
@@ -28,7 +28,7 @@ void Actuatorsetup() {
   ADCSRA = (1 << ADEN) | (1 << ADPS2); // Example: Enable ADC, prescaler 16
 }
 
-void loop() { // creates a value to use for position... does what analogRead does apparently
+void loop() { 
   // Start conversion (ADSC bit)
   ADCSRA |= (1 << ADSC);
 
