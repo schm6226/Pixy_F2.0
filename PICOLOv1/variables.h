@@ -194,7 +194,7 @@ const int tiltPin = 7;
 int tiltVal = 0;
 String tiltMode = "Idle";
 int maxVal = 0;
-int minVal = 0
+int minVal = 0;
 // //pitch
 // float ax = accelerometer[0]; // X-axis acceleration
 // float ay = accelerometer[1]; // Y-axis acceleration
