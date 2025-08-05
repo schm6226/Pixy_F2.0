@@ -20,7 +20,7 @@ void Actuatorsetup() {
   // Configure ADMUX register
   // Select AVCC as reference (REFS bits)
   // Select A0 as input channel (MUX bits)
-  ADMUX = (1 << REFS0) | (0 << MUX0); // change MUX0 to whatever anaolog pin is the input.
+  ADMUX = (1 << REFS0) | (0 << MUX28); // change MUX0 to whatever anaolog pin is the input.
 
   // Configure ADCSRA register
   // Enable ADC (ADEN bit)
