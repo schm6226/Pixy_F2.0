@@ -6,6 +6,9 @@ Code by: Andrew Schmit
 Last modified: 6/30/2025
 _____________________________________________________________
 */
+// gonna add some defines in this for actuator setup then they can  be moved
+#define SET(port, bit) ((port) |= (1 << (bit)))
+#define CLR(port, bit) ((port) &= ~(1 << (bit)))
 
 void Actuatorsetup() {
 
