@@ -15,7 +15,7 @@ void Actuatorsetup() {
   analogWrite(PWMB, moveDuty); 
 
   printOLED("Starting Actuator test.");
-
+/*
   void setup() {
   // Configure ADMUX register
   // Select AVCC as reference (REFS bits)
@@ -46,11 +46,12 @@ void loop() { // creates a value to use for position... does what analogRead doe
   // You can use this value as needed in your program
   // For example, Serial.println(sensorValue);
 }
-  
+*/
   moveActuator(false);
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
+    //pos = sensorValue;
     printOLED(String(pos));
   }
   maxPos = pos;
@@ -59,6 +60,7 @@ void loop() { // creates a value to use for position... does what analogRead doe
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
+    //pos = sensorValue;
     printOLED(String(pos));
   }
   minPos = pos;
@@ -67,6 +69,7 @@ void loop() { // creates a value to use for position... does what analogRead doe
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
+   // pos = sensorValue;
     truePos = posMap(pos,minPos,maxPos);
     printOLED(String(truePos));
   }
@@ -90,6 +93,7 @@ void resetActuator() {
   // Continuously move actuator until it's within the desired range
   while (true) {
     pos = analogRead(feedbackPin);
+    //pos = sensorValue;
     truePos = posMap(pos, minPos, maxPos);
 
     if (truePos > targetPos + tolerance) {
