@@ -48,7 +48,7 @@ float posMap(int pos,int min,int max){
 }
 // Moves actuator in a direction at duty cycle
 // Stops the actuator
-void stopActuator() {
+void stopActuator() { 
   analogWrite(PWMB, 0);
 }
 
@@ -104,7 +104,7 @@ void moveActuator(bool extend) {
   Serial.println("movibg");
 }
 */
-void moveActuator(bool extend) {
+void moveActuator(bool extend) { // new MOVEACTUATOR
   if(extend) {
     SET(PORTB, 12);
     CLR(PORTB, 11);
