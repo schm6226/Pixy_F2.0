@@ -15,8 +15,8 @@ void Actuatorsetup() {
   analogWrite(PWMB, moveDuty); 
 
   printOLED("Starting Actuator test.");
-/*
-  void setup() { // creates a value to use for position... does what analogRead does apparently
+
+// creates a value to use for position... does what analogRead does apparently
   // Configure ADMUX register
   // Select AVCC as reference (REFS bits)
   // Select A0 as input channel (MUX bits)
@@ -26,32 +26,12 @@ void Actuatorsetup() {
   // Enable ADC (ADEN bit)
   // Set prescaler for a suitable ADC clock (ADPS bits)
   ADCSRA = (1 << ADEN) | (1 << ADPS2); // Example: Enable ADC, prescaler 16
-}
 
-void loop() { 
-  // Start conversion (ADSC bit)
-  ADCSRA |= (1 << ADSC);
-
-  // Wait for conversion to complete (ADIF bit)
-  while (!(ADCSRA & (1 << ADIF)));
-
-  // Clear conversion complete flag (ADIF bit)
-  ADCSRA |= (1 << ADIF);
-
-  // Read the 10-bit result from ADCL and ADCH registers
-  // Note: ADCL must be read first, then ADCH
-  int sensorValue = ADCL | (ADCH << 8);
-
-  // Now 'sensorValue' contains the digital representation of the analog input on A0
-  // You can use this value as needed in your program
-  // For example, Serial.println(sensorValue);
-}
-*/
   moveActuator(false);
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
-    //pos = sensorValue;
+    //pos = newAnalogRead();
     printOLED(String(pos));
   }
   maxPos = pos;
@@ -60,7 +40,7 @@ void loop() {
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
-    //pos = sensorValue;
+    //pos = newAnalogRead();
     printOLED(String(pos));
   }
   minPos = pos;
@@ -69,7 +49,7 @@ void loop() {
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
-   // pos = sensorValue;
+    //pos = newAnalogRead();
     truePos = posMap(pos,minPos,maxPos);
     printOLED(String(truePos));
   }
@@ -93,7 +73,7 @@ void resetActuator() {
   // Continuously move actuator until it's within the desired range
   while (true) {
     pos = analogRead(feedbackPin);
-    //pos = sensorValue;
+    //pos = newAnalogRead();
     truePos = posMap(pos, minPos, maxPos);
 
     if (truePos > targetPos + tolerance) {
@@ -153,6 +133,26 @@ void moveActuator(bool extend) { // new MOVEACTUATOR
   }
   analogWrite(PWMB, moveDuty);
   Serial.println("movibg");
+}
+
+void newAnalogRead() {  // gets analog Position
+  // Start conversion (ADSC bit)
+  ADCSRA |= (1 << ADSC);
+
+  // Wait for conversion to complete (ADIF bit)
+  while (!(ADCSRA & (1 << ADIF)));
+
+  // Clear conversion complete flag (ADIF bit)
+  ADCSRA |= (1 << ADIF);
+
+  // Read the 10-bit result from ADCL and ADCH registers
+  // Note: ADCL must be read first, then ADCH
+  int sensorValue = ADCL | (ADCH << 8); // ADCL lower bits ADCH higher bits
+  return sensorValue;
+
+  // Now 'sensorValue' contains the digital representation of the analog input on A0
+  // You can use this value as needed in your program
+  // For example, Serial.println(sensorValue);
 }
 
 // float calculatePitch(float pitch){
