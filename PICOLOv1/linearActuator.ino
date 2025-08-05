@@ -96,10 +96,24 @@ void updateLinearActuator() {
   }
 }
 // Reads and prints position every 100 ms for `duration` milliseconds
+/*
 void moveActuator(bool extend) {
-  digitalWrite(BIN1, extend ? HIGH : LOW);
-  digitalWrite(BIN2, extend ? LOW : HIGH);
+  digitalWrite(BIN1, extend ? HIGH : LOW); // 12 pin
+  digitalWrite(BIN2, extend ? LOW : HIGH); //11 pin
   analogWrite(PWMB, moveDuty);  // 20% 
+  Serial.println("movibg");
+}
+*/
+void moveActuator(bool extend) {
+  if(extend) {
+    SET(PORTB, 12);
+    CLR(PORTB, 11);
+  }
+  else {
+    CLR(PORTB, 12);
+    SET(PORTB, 11);
+  }
+  analogWrite(PWMB, moveDuty);
   Serial.println("movibg");
 }
 
