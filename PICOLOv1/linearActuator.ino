@@ -6,22 +6,32 @@ Code by: Andrew Schmit
 Last modified: 6/30/2025
 _____________________________________________________________
 */
+// gonna add some defines in this for actuator setup then they can  be moved
+#define SET(port, bit) ((port) |= (1 << (bit))) // this is supposed to make SET turn on LED
+#define CLR(port, bit) ((port) &= ~(1 << (bit))) // turns off LED, this is imported code, can be changed if issues
 
 void Actuatorsetup() {
-  pinMode(BIN1, OUTPUT);
-  pinMode(BIN2, OUTPUT);
-  pinMode(PWMB, OUTPUT);
-  pinMode(STBY, OUTPUT);
-  
-  digitalWrite(STBY, HIGH); // Wake up motor driver
+
   analogWrite(PWMB, moveDuty); 
 
   printOLED("Starting Actuator test.");
-  
+
+  //creates a value to use for position... does what analogRead does apparently
+  // Configure ADMUX register
+  // Select AVCC as reference (REFS bits)
+  // Select A0 as input channel (MUX bits)
+  ADMUX = (1 << REFS0) | (0 << MUX28); // change MUX0 to whatever anaolog pin is the input.
+
+  // Configure ADCSRA register
+  // Enable ADC (ADEN bit)
+  // Set prescaler for a suitable ADC clock (ADPS bits)
+  ADCSRA = (1 << ADEN) | (1 << ADPS2); // Example: Enable ADC, prescaler 16
+
   moveActuator(false);
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
+    //pos = newAnalogRead();
     printOLED(String(pos));
   }
   maxPos = pos;
@@ -30,6 +40,7 @@ void Actuatorsetup() {
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
+    //pos = newAnalogRead();
     printOLED(String(pos));
   }
   minPos = pos;
@@ -38,6 +49,7 @@ void Actuatorsetup() {
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
+    //pos = newAnalogRead();
     truePos = posMap(pos,minPos,maxPos);
     printOLED(String(truePos));
   }
@@ -49,25 +61,19 @@ void Actuatorsetup() {
 }
 
 float posMap(int pos,int min,int max){
-  truePos = (pos - min) * (5.0 / (max - min));
-  return truePos;
+  return (float)(pos - min) * (5.0 / (max - min)); // only change that might be meaningful
 }
 // Moves actuator in a direction at duty cycle
-void moveActuator(bool extend) {
-  digitalWrite(BIN1, extend ? HIGH : LOW);
-  digitalWrite(BIN2, extend ? LOW : HIGH);
-  analogWrite(PWMB, moveDuty);  // 20% duty
-}
 // Stops the actuator
-void stopActuator() {
+void stopActuator() { 
   analogWrite(PWMB, 0);
 }
 
-// I need to ask Andrew about position scale and why 280 is the assumed to be reset.
 void resetActuator() {
   // Continuously move actuator until it's within the desired range
   while (true) {
     pos = analogRead(feedbackPin);
+    //pos = newAnalogRead();
     truePos = posMap(pos, minPos, maxPos);
 
     if (truePos > targetPos + tolerance) {
@@ -77,35 +83,81 @@ void resetActuator() {
       moveActuator(false);  // Move toward extended
     }
     else {
-      stopActuator();
+      stopActuator(); 
+      delay(100);
+      Serial.println("centered");
       break;  // Exit loop when within range
     }
-
     delay(50);  // Give time for motor to move
   }
 }
 
 void updateLinearActuator() {  
-  proportionalZ = KPZ * errorZ; // find proportional term
-  
   if(pixy.ccc.numBlocks > 0){
-    while(true){
+     proportionalZ = KPZ * errorZ; // find proportional term
+     Serial.println("linear Actuator stuff: " + String(proportionalZ) + ", " + String(errorZ) + ", " + String(tiltOffset));
       if (proportionalZ < -5){
+        Serial.println("move true");
         moveActuator(true);
       }
       else if (proportionalZ > 5) {
+        Serial.println("move false");
         moveActuator(false);
       }
       else {
+        Serial.println("move stop");
         stopActuator();
-        break;
       }
-      delay(50);
     }
-  }else{
-    resetActuator();
+  else{
+    stopActuator();
   }
-
 }
 // Reads and prints position every 100 ms for `duration` milliseconds
+/*
+void moveActuator(bool extend) {
+  digitalWrite(BIN1, extend ? HIGH : LOW); // 12 pin
+  digitalWrite(BIN2, extend ? LOW : HIGH); //11 pin
+  analogWrite(PWMB, moveDuty);  // 20% 
+  Serial.println("movibg");
+}
+*/
+void moveActuator(bool extend) { // new MOVEACTUATOR
+  if(extend) {
+    SET(PORTB, 12);
+    CLR(PORTB, 11);
+  }
+  else {
+    CLR(PORTB, 12);
+    SET(PORTB, 11);
+  }
+  analogWrite(PWMB, moveDuty);
+  Serial.println("movibg");
+}
 
+void newAnalogRead() {  // gets analog Position
+  // Start conversion (ADSC bit)
+  ADCSRA |= (1 << ADSC);
+
+  // Wait for conversion to complete (ADIF bit)
+  while (!(ADCSRA & (1 << ADIF)));
+
+  // Clear conversion complete flag (ADIF bit)
+  ADCSRA |= (1 << ADIF);
+
+  // Read the 10-bit result from ADCL and ADCH registers
+  // Note: ADCL must be read first, then ADCH
+  int sensorValue = ADCL | (ADCH << 8); // ADCL lower bits ADCH higher bits
+  return sensorValue;
+
+  // Now 'sensorValue' contains the digital representation of the analog input on A0
+  // You can use this value as needed in your program
+  // For example, Serial.println(sensorValue);
+}
+
+// float calculatePitch(float pitch){
+//   sensors_event_t event;
+//   bno.getEvent(&event);
+//   pitch = atan2(-ax, sqrt(ay * ay + az * az)) * 180.0 / PI;
+//   return pitch;
+// }
