@@ -31,10 +31,13 @@ void Actuatorsetup() {
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
+      if (pos > maxVal) {
+        maxVal = pos;
+      }
     //pos = newAnalogRead();
     printOLED(String(pos));
   }
-  maxPos = pos;
+  maxPos = maxVal;
 
   moveActuator(true);
   for (int i = 0; i < 50; i++){
