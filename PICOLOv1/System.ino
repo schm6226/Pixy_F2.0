@@ -11,7 +11,12 @@ This file contains the Setup and Update functions for the entire system. The cod
 // System wide setup function.
 
 void systemSetup() {
-
+  // pinMode(feedbackPin, INPUT);
+  // pinMode(BIN1, OUTPUT);
+  // pinMode(BIN2, OUTPUT);
+  // pinMode(PWMB, OUTPUT);
+  // pinMode(STBY, OUTPUT);
+  // digitalWrite(STBY, HIGH); // Wake up motor driver
   Serial.begin(SERIAL_BAUD);
   Serial1.begin(19200);
 
@@ -109,8 +114,9 @@ void systemSetup() {
   pinMode(tiltPin, INPUT);
 
   Pixysetup();
-  Actuatorsetup();
   Controlwheelsetup();
+  delay(1000);
+ // Actuatorsetup();
   Serial.println("Setup Finished");
   printOLED("Servo Setup Finished", true);
   Serial.println(header);
@@ -134,9 +140,12 @@ void systemUpdate(){
   // updating sensors
 
   //GPSupdate();
+  unsigned long previousTime = millis();
   MSupdate();
   BNOupdate();
   Pixyupdate();
+
+  
 
   //inTher.update();
   //inTempF = inTher.getTempF();
@@ -147,34 +156,34 @@ void systemUpdate(){
 
 
   //Addtional sensor update code here.
-
-
-  servoCommand = 0; //sets initial servo speed to 0
+  if(vertVelFt < 0){
+    unsigned long currentTime = millis();
+    timeFalling += currentTime - previousTime;
+    if(timeFalling/1000 >= 10){
+      runState = 0;
+    }
+  }else{
+    timeFalling = 0;
+  }
 
   val = digitalRead(6);
   tiltVal = digitalRead(7);
   analogRead(feedbackPin);
 
-  if (val == HIGH){
+  if (val == HIGH && runState){
+    Serial.println("mode is now Gyro");
     mode = "Gyro";
-    sensors_event_t event;
-    bno.getEvent(&event);
-    float currentHeading = event.orientation.x;  // Using x-axis for heading
-    // Calculate error (difference from target orientation)
-    // float error = calculateHeadingError(currentHeading, TARGET_ORIENTATION);
-    // Calculate PID output
-    float controlOutput = calculatePID(error);
-    torque = accelerometer[2] * torqueKP;
-    // Convert PID output to servo command
-    servoCommand = mapPIDToServo(controlOutput); //function that maps the calculated PID output to servo control
-    servoCommand = servoCommand + torque;
-    setServoSpeed(servoCommand);
+    float pidOutput = calculatePID(error);
+    angle = pidOutput;
+    setServoSpeed(pidOutput);
 
-    if(panOffset < -20 && pixy.ccc.numBlocks > 0){
+    if(error < -10){
       digitalWrite(LED_R, HIGH);
+      digitalWrite(LED_L, LOW);
     }
-    else if(panOffset > 20 && pixy.ccc.numBlocks > 0){
+    else if(error > 10){
       digitalWrite(LED_L, HIGH);
+      digitalWrite(LED_R, LOW);
     }
     else{
       digitalWrite(LED_L, LOW);
@@ -183,18 +192,28 @@ void systemUpdate(){
     
 
   } else{
+    Serial.println("mode is Idle");
     mode = "Idle"; //sets system mode to idle
-    servoCommand = 0; //sets initial servo speed to 0
+    angle = 0; //sets initial servo speed to 0
   }
   
-  if (tiltVal == HIGH) {
-      tiltMode = "Tilt";
-      updateLinearActuator();
-    }
-    else{
-      tiltMode = "Idle";
-      resetActuator();
-    }
+  // if (tiltVal == HIGH) {
+  //     Serial.println("linear actuator engaged");
+  //     tiltMode = "Tilt";
+  //     updateLinearActuator();
+  //     // digitalWrite(BIN1, HIGH);
+  //     // digitalWrite(BIN2, LOW );
+  //     // analogWrite(PWMB, moveDuty);  // 20% duty
+  //     // delay(5000);
+  //     // digitalWrite(BIN1, LOW);
+  //     // digitalWrite(BIN2, HIGH);
+  //     // analogWrite(PWMB, moveDuty);  // 20% duty
+  //     // delay(5000);
+  //   }
+  //   else{
+  //     tiltMode = "Idle";
+  //     // resetActuator();
+  //   }
 
   // Delay for next reading
   delay(BNO055_SAMPLERATE_DELAY_MS); // optional delay that decreases system Hz but reduces gyro drift
