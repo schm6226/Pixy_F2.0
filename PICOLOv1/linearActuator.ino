@@ -15,7 +15,7 @@ void Actuatorsetup() {
   analogWrite(PWMB, moveDuty); 
 
   printOLED("Starting Actuator test.");
-
+/*
   //creates a value to use for position... does what analogRead does apparently
   // Configure ADMUX register
   // Select AVCC as reference (REFS bits)
@@ -26,7 +26,7 @@ void Actuatorsetup() {
   // Enable ADC (ADEN bit)
   // Set prescaler for a suitable ADC clock (ADPS bits)
   ADCSRA = (1 << ADEN) | (1 << ADPS2); // Example: Enable ADC, prescaler 16
-
+*/
   moveActuator(false);
   for (int i = 0; i < 50; i++){
     delay(100);
@@ -134,7 +134,7 @@ void moveActuator(bool extend) { // new MOVEACTUATOR
   analogWrite(PWMB, moveDuty);
   Serial.println("movibg");
 }
-
+/*
 void newAnalogRead() {  // gets analog Position
   // Start conversion (ADSC bit)
   ADCSRA |= (1 << ADSC);
@@ -154,6 +154,7 @@ void newAnalogRead() {  // gets analog Position
   // You can use this value as needed in your program
   // For example, Serial.println(sensorValue);
 }
+*/
 
 // float calculatePitch(float pitch){
 //   sensors_event_t event;
