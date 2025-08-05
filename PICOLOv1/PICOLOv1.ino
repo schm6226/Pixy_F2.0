@@ -59,7 +59,7 @@ Servo myServo;
 
 //LEDs
 #define LED_R (8) //Flywheel spinning right
-#define LED_L (9) //Flywheel spinning right
+#define LED_L (9) //Flywheel spinning left
 
 // Motor driver pins (TB6612FNG - Channel B)
 #define BIN1 (12)   // Direction pin B
