@@ -16,7 +16,7 @@ void Actuatorsetup() {
 
   printOLED("Starting Actuator test.");
 
-// creates a value to use for position... does what analogRead does apparently
+  //creates a value to use for position... does what analogRead does apparently
   // Configure ADMUX register
   // Select AVCC as reference (REFS bits)
   // Select A0 as input channel (MUX bits)
