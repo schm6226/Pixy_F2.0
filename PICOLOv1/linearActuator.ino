@@ -43,10 +43,13 @@ void Actuatorsetup() {
   for (int i = 0; i < 50; i++){
     delay(100);
     pos = analogRead(feedbackPin);
+      if (pos < minVal) {
+        minVal = pos;
+      }
     //pos = newAnalogRead();
     printOLED(String(pos));
   }
-  minPos = pos;
+  minPos = minVal;
   
   moveActuator(false);
   for (int i = 0; i < 50; i++){
