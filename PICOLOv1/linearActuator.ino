@@ -15,6 +15,37 @@ void Actuatorsetup() {
   analogWrite(PWMB, moveDuty); 
 
   printOLED("Starting Actuator test.");
+
+  void setup() {
+  // Configure ADMUX register
+  // Select AVCC as reference (REFS bits)
+  // Select A0 as input channel (MUX bits)
+  ADMUX = (1 << REFS0) | (0 << MUX0); // Example: Vcc as ref, A0 as input
+
+  // Configure ADCSRA register
+  // Enable ADC (ADEN bit)
+  // Set prescaler for a suitable ADC clock (ADPS bits)
+  ADCSRA = (1 << ADEN) | (1 << ADPS2); // Example: Enable ADC, prescaler 16
+}
+
+void loop() { // creates a value to use for position... does what analogRead does apparently
+  // Start conversion (ADSC bit)
+  ADCSRA |= (1 << ADSC);
+
+  // Wait for conversion to complete (ADIF bit)
+  while (!(ADCSRA & (1 << ADIF)));
+
+  // Clear conversion complete flag (ADIF bit)
+  ADCSRA |= (1 << ADIF);
+
+  // Read the 10-bit result from ADCL and ADCH registers
+  // Note: ADCL must be read first, then ADCH
+  int sensorValue = ADCL | (ADCH << 8);
+
+  // Now 'sensorValue' contains the digital representation of the analog input on A0
+  // You can use this value as needed in your program
+  // For example, Serial.println(sensorValue);
+}
   
   moveActuator(false);
   for (int i = 0; i < 50; i++){
