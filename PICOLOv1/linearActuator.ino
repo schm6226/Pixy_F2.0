@@ -8,7 +8,7 @@ _____________________________________________________________
 */
 // gonna add some defines in this for actuator setup then they can  be moved
 #define SET(port, bit) ((port) |= (1 << (bit))) // this is supposed to make SET turn on LED
-#define CLR(port, bit) ((port) &= ~(1 << (bit))) // turns off LED, this is imported code, can be changed if issues
+#define CLR(port, bit) ((port) &= ~(1 << (bit))) // turns off LED, this is imported code, can be changed if issues, or if wrong.
 
 void Actuatorsetup() {
 
